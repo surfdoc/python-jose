@@ -468,7 +468,12 @@ class CryptographyAESKey(Key):
     def encrypt(self, plain_text, aad=None):
         plain_text = ensure_binary(plain_text)
         try:
-            iv = get_random_bytes(12)
+            if self._algorithm in ['A128GCM', 'A192GCM', 'A256GCM', 'A128GCMKW', 'A192GCMKW', 'A256GCMKW']:
+                #print("generating IV of length 96bit")
+                iv = get_random_bytes(12)
+            else:
+                #print("generating IV of length 128bit")
+                iv = get_random_bytes(16)
             mode = self._mode(iv)
             if mode.name == "GCM":
                 cipher = aead.AESGCM(self._key)
